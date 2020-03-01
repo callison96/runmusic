@@ -1,6 +1,7 @@
 from stravalib import Client
 import config
 import datetime
+import pytz
 
 client = Client()
 
@@ -28,9 +29,17 @@ athlete = client.get_athlete()
 print("For {id}, I now have an access token {token}".format(id=athlete.firstname, token=access_token))
 
 def get_most_recent_activity(client):
-    now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    utc_now = pytz.utc.localize(datetime.datetime.utcnow())
+    now = utc_now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    for activity in client.get_activities(before=now, limit=1):
+        #already returned in utc
+        return activity
 
-    for activity in client.get_activities(before = now,  limit=1):
-        print("{0.name} {0.start_date} {0.elapsed_time}".format(activity))
 
-get_most_recent_activity(client)
+def get_activity_length(activity):
+    return [activity.start_date, activity.start_date + activity.elapsed_time]
+
+
+recent_activity = get_most_recent_activity(client)
+
+activity_start_end = get_activity_length(recent_activity)
