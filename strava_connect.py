@@ -46,16 +46,20 @@ recent_activity = get_most_recent_activity(client)
 
 activity_start_end = get_activity_length(recent_activity)
 
-test_time =  pytz.utc.localize(datetime.datetime.utcnow())
+test_time_before =  pytz.utc.localize(datetime.datetime.utcnow())
+
+test_time_after = test_time_before - datetime.timedelta(hours=1)
 
 #track_list = get_latest_tracks(config.SPOTIFY_USERNAME,
 #                    before = activity_start_end[1].timestamp()*1000,
 #                    limit = 5)
 
-track_list = get_latest_tracks(config.SPOTIFY_USERNAME,
-                    before = test_time.timestamp()*1000,
-                    limit = 5)
+results_before, results_after = get_latest_tracks(config.SPOTIFY_USERNAME,
+                    before = test_time_before.timestamp()*1000,
+                    after = test_time_after.timestamp()*1000,
+                    limit = 25)
 
+print (set(results_before) & set(results_after))
 
-client.update_activity(recent_activity.id, description = str(track_list))
-print ('Updated description:' , str(track_list))
+#client.update_activity(recent_activity.id, description = str(track_list))
+#print ('Updated description:' , str(track_list))
