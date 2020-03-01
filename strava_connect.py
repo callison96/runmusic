@@ -2,13 +2,15 @@ from stravalib import Client
 import config
 import datetime
 import pytz
+from spotify_auth import get_latest_tracks
 
 client = Client()
 
 token_response= {
-  "access_token": "3d92dca05a0b913a1c0736a04b0387403be6a36d",
-  "expires_at": 1583091822,
-  "refresh_token": "cc60179727b8100db69184a83a4ed37a675d5e63"}
+  "access_token": "87f0a2299c12e6b5b22fe3b67e8dc003d014f728",
+  "expires_at": 1583098922,
+  "refresh_token": "587e4d536796c0935a37a93d5b537c56720c74f0"
+}
 
 
 access_token = token_response['access_token']
@@ -43,3 +45,17 @@ def get_activity_length(activity):
 recent_activity = get_most_recent_activity(client)
 
 activity_start_end = get_activity_length(recent_activity)
+
+test_time =  pytz.utc.localize(datetime.datetime.utcnow())
+
+#track_list = get_latest_tracks(config.SPOTIFY_USERNAME,
+#                    before = activity_start_end[1].timestamp()*1000,
+#                    limit = 5)
+
+track_list = get_latest_tracks(config.SPOTIFY_USERNAME,
+                    before = test_time.timestamp()*1000,
+                    limit = 5)
+
+
+client.update_activity(recent_activity.id, description = str(track_list))
+print ('Updated description:' , str(track_list))
